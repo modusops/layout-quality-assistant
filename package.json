@@ -1,0 +1,14 @@
+{
+  "name": "figma-cross-file-copier",
+  "version": "1.0.0",
+  "description": "Copy frames between Figma files",
+  "main": "code.js",
+  "scripts": {
+    "build": "echo 'Build complete - using JavaScript directly'",
+    "watch": "echo 'Watch mode not needed for JavaScript'"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.90.0",
+    "typescript": "^5.0.0"
+  }
+}

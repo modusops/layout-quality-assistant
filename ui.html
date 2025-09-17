@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 16px;
+      font-size: 14px;
+      line-height: 1.4;
+      background-color: #444444;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h2 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #ffffff;
+    }
+    
+    .selection-info {
+      background: #666;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      /* border: 1px solid #000000; */
+    }
+    
+    .selection-info .label {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .selection-info .value {
+      color: #000;
+      font-weight: 400;
+    }
+    
+    .analyze-btn {
+      background: #4851b6;
+      color: white;
+      border: none;
+      padding: 12px 12px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .analyze-btn:hover {
+      background: #3d47b2;
+    }
+    
+    .analyze-btn:disabled {
+      background: #b0b0b0;
+      cursor: not-allowed;
+    }
+    
+    .results-container {
+      display: none;
+    }
+    
+    .results-container.visible {
+      display: block;
+    }
+    
+    .issue-category {
+      margin-bottom: 16px;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .issue-category.has-issues {
+      border-color: #000000;
+      /* #de6e70 */
+    }
+    
+    .issue-category.no-issues {
+      border-color: #000000; 
+      /* #64c41a */
+    }
+    
+    .issue-header {
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .issue-header.has-issues {
+      background: #333;
+      border-bottom: 1px solid #000000;
+      /* #de6e70 */
+    }
+    
+    .issue-header.no-issues {
+      background: #333;
+      /* #64c41a */
+      color: #ffffff
+    }
+    
+    .issue-count {
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .issue-count.has-issues {
+      background: #f67a7c;
+      color: white;
+    }
+    
+    .issue-count.no-issues {
+      background: #69ea28;
+      color: white;
+    }
+    
+    .issue-items {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    
+    .issue-item {
+      padding: 12px 12px;
+      border-bottom: 1px solid #333;
+      font-size: 11px;
+      /* color:#333 */
+      background-color: #000;
+    }
+    
+    .issue-item:last-child {
+      border-bottom: none;
+    }
+    
+    .issue-name {
+      font-weight: 400;
+      color: #fff;
+      margin-bottom: 4px;
+      padding: 8px 0;
+    }
+    
+    .issue-details {
+      color: #666;
+      font-size: 10px;
+      font-weight: 400;
+    }
+    
+    .issue-explanation {
+      background: #333;
+      padding: 6px 8px;
+      margin-top: 4px;
+      border-radius: 4px;
+      border: 1px solid #000000;
+      color: #8e8e8e;
+      font-size: 12px;
+    }
+    
+    .summary {
+      text-align: center;
+      padding: 16px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      font-weight: 400;
+    }
+    
+    .summary.clean {
+      background: #e8f5e8;
+      color: #389e0d;
+      border: 2px solid #52c41a;
+    }
+    
+    .summary.issues {
+      background: #333;
+      color: #f67a7c;
+      border: 1px solid #000;
+    }
+    
+    .error {
+      background: #ffe8e8;
+      color: #8b0000;
+      padding: 12px;
+      border-radius: 2px;
+      margin: 16px 0;
+      font-size: 12px;
+    }
+    
+    /* .close-btn {
+      background: #666;
+      color: white;
+      border: none;
+      padding: 12px 12px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      margin-top: 10px;
+    } */
+    
+    /* .close-btn:hover {
+      background: #555;
+    } */
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>🔍 Layout Quality Assistant</h2>
+    <!-- <p style="margin: 0; color: #000; font-weight: 500;">Check for common design issues</p> -->
+  </div>
+  
+  <div class="selection-info">
+    <div><span class="label">Layer selected:</span> <span id="selectionName" class="value">Nothing selected</span></div>
+    <div><span class="label">Type:</span> <span id="selectionType" class="value">-</span></div>
+  </div>
+  
+  <button id="analyzeBtn" class="analyze-btn" disabled>Select a Frame to Analyze</button>
+  
+  <div id="resultsContainer" class="results-container">
+    <div id="summary" class="summary">
+      <!-- Summary will be inserted here -->
+    </div>
+    
+    <div id="issuesList">
+      <!-- Issues will be inserted here -->
+    </div>
+  </div>
+  
+  <div id="errorContainer"></div>
+  
+  <!-- <button id="closeBtn" class="close-btn">Close Plugin</button> -->
+  
+  <script>
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    // const closeBtn = document.getElementById('closeBtn');
+    const selectionName = document.getElementById('selectionName');
+    const selectionType = document.getElementById('selectionType');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const summary = document.getElementById('summary');
+    const issuesList = document.getElementById('issuesList');
+    const errorContainer = document.getElementById('errorContainer');
+    
+    const ISSUE_EXPLANATIONS = {
+      unlabeledLayers: "💡 Proper naming helps developers understand component structure and improves maintainability.",
+      hiddenLayers: "💡 Hidden layers can cause confusion during handoff and may indicate leftover elements.",
+      fractionalValues: "💡 Use 0, 2px, 4px, or 8px increments for spacing between frames and padding to maintain consistent visual rhythm.",
+      groupsUsed: "💡 Groups scale content like images; frames provide better responsive layout control.",
+      excessiveAbsolutePositioning: "💡 Too many absolutely positioned elements make layouts fragile and hard to maintain responsively.",
+      negativeSpacing: "💡 Negative spacing in auto-layout can cause unexpected overlapping and layout issues."
+    };
+    
+    const ISSUE_TITLES = {
+      unlabeledLayers: 'Unlabeled layers',
+      hiddenLayers: 'Hidden layers', 
+      fractionalValues: 'Inconsistent spacing values',
+      groupsUsed: 'Groups instead of frames',
+      negativeSpacing: 'Negative auto-layout spacing'
+    };
+    
+    analyzeBtn.onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'analyze-selection' } }, '*');
+    };
+    
+    // closeBtn.onclick = () => {
+    //   parent.postMessage({ pluginMessage: { type: 'close' } }, '*');
+    // };
+    
+    function updateSelectionInfo(name, type, hasSelection) {
+      selectionName.textContent = name || 'Nothing selected';
+      selectionType.textContent = type || '-';
+      
+      if (hasSelection && type === 'FRAME') {
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = `Analyze "${name}"`;
+      } else if (hasSelection && type !== 'FRAME') {
+        analyzeBtn.disabled = true;
+        analyzeBtn.textContent = 'Please select a Frame';
+      } else {
+        analyzeBtn.disabled = true;
+        analyzeBtn.textContent = 'Select a Frame to Analyze';
+      }
+    }
+    
+    function displayResults(frameName, issues) {
+      resultsContainer.classList.add('visible');
+      
+      // Count total issues
+      const totalIssues = Object.values(issues).reduce((sum, issueList) => sum + issueList.length, 0);
+      
+      // Update summary
+      if (totalIssues === 0) {
+        summary.className = 'summary clean';
+        summary.textContent = `🎉 "${frameName}" looks great! No issues found.`;
+      } else {
+        summary.className = 'summary issues';
+        summary.textContent = `🔎 Found ${totalIssues} issue${totalIssues === 1 ? '' : 's'} in "${frameName}"`;
+      }
+      
+      // Display issues by category
+      issuesList.innerHTML = '';
+      Object.keys(issues).forEach(category => {
+        const categoryEl = createIssueCategory(category, issues[category]);
+        issuesList.appendChild(categoryEl);
+      });
+    }
+    
+    function createIssueCategory(category, items) {
+      const categoryEl = document.createElement('div');
+      const hasIssues = items.length > 0;
+      categoryEl.className = `issue-category ${hasIssues ? 'has-issues' : 'no-issues'}`;
+      
+      // Header
+      const headerEl = document.createElement('div');
+      headerEl.className = `issue-header ${hasIssues ? 'has-issues' : 'no-issues'}`;
+      
+      const titleEl = document.createElement('div');
+      titleEl.textContent = ISSUE_TITLES[category] || category;
+      
+      const countEl = document.createElement('div');
+      countEl.className = `issue-count ${hasIssues ? 'has-issues' : 'no-issues'}`;
+      countEl.textContent = hasIssues ? items.length : '✓';
+      
+      headerEl.appendChild(titleEl);
+      headerEl.appendChild(countEl);
+      categoryEl.appendChild(headerEl);
+      
+      // Items (only show if there are issues)
+      if (hasIssues) {
+        const itemsEl = document.createElement('div');
+        itemsEl.className = 'issue-items';
+        
+        items.forEach(item => {
+          const itemEl = createIssueItem(category, item);
+          itemsEl.appendChild(itemEl);
+        });
+        
+        categoryEl.appendChild(itemsEl);
+      }
+      
+      return categoryEl;
+    }
+    
+    function createIssueItem(category, item) {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'issue-item';
+      
+      const nameEl = document.createElement('div');
+      nameEl.className = 'issue-name';
+      nameEl.textContent = item.name || 'Unnamed';
+      
+      const detailsEl = document.createElement('div');
+      detailsEl.className = 'issue-details';
+      
+      // Add specific details based on issue type
+      let details = '';
+      if (item.values) {
+        details = item.values.join(', ');
+      } else if (item.childCount !== undefined) {
+        details = `${item.childCount} children`;
+      } else if (item.spacing !== undefined) {
+        details = `Spacing: ${item.spacing}px`;
+      } else if (item.count !== undefined && item.elements) {
+        details = `${item.count} absolute: ${item.elements.join(', ')}`;
+      }
+      
+      if (details) {
+        detailsEl.textContent = details;
+      }
+      
+      const explanationEl = document.createElement('div');
+      explanationEl.className = 'issue-explanation';
+      explanationEl.textContent = ISSUE_EXPLANATIONS[category] || '';
+      
+      itemEl.appendChild(nameEl);
+      if (details) itemEl.appendChild(detailsEl);
+      itemEl.appendChild(explanationEl);
+      
+      return itemEl;
+    }
+    
+    function showError(message) {
+      const errorEl = document.createElement('div');
+      errorEl.className = 'error';
+      errorEl.textContent = message;
+      errorContainer.innerHTML = '';
+      errorContainer.appendChild(errorEl);
+      
+      setTimeout(() => {
+        errorContainer.innerHTML = '';
+      }, 5000);
+    }
+    
+    window.onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      
+      switch (message.type) {
+        case 'selection-change':
+          updateSelectionInfo(
+            message.selectionName, 
+            message.selectionType, 
+            message.hasSelection
+          );
+          
+          // Hide previous results when selection changes
+          resultsContainer.classList.remove('visible');
+          break;
+          
+        case 'analysis-complete':
+          displayResults(message.frameName, message.issues);
+          break;
+          
+        case 'error':
+          showError(message.message);
+          break;
+      }
+    };
+  </script>
+</body>
+</html>
