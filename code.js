@@ -4,6 +4,26 @@ figma.showUI(__html__, { width: 400, height: 620 });
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'analyze-selection') {
     await analyzeSelectedFrame();
+  } else if (msg.type === 'select-node') {
+    try {
+      const node = await figma.getNodeByIdAsync(msg.nodeId);
+      
+      if (node) {
+        // Check if node is a SceneNode (can be selected)
+        if ('type' in node && node.type !== 'DOCUMENT' && node.type !== 'PAGE') {
+          figma.currentPage.selection = [node];
+          figma.viewport.scrollAndZoomIntoView([node]);
+          figma.notify(`Selected: ${node.name}`);
+        } else {
+          figma.notify('This node type cannot be selected');
+        }
+      } else {
+        figma.notify('Could not find that node');
+      }
+    } catch (error) {
+      console.error('Error selecting node:', error);
+      figma.notify(`Error selecting node: ${error.message}`);
+    }
   } else if (msg.type === 'close') {
     figma.closePlugin();
   }
@@ -100,7 +120,8 @@ function checkUnlabeledLayers(node, issues) {
   if (startsWithDefault) {
     issues.unlabeledLayers.push({
       name: node.name,
-      type: node.type
+      type: node.type,
+      id: node.id  // ADDED: Store node ID
     });
   }
 }
@@ -109,7 +130,8 @@ function checkHiddenLayers(node, issues) {
   if (node.visible === false) {
     issues.hiddenLayers.push({
       name: node.name,
-      type: node.type
+      type: node.type,
+      id: node.id  // ADDED: Store node ID
     });
   }
 }
@@ -206,7 +228,8 @@ function checkFractionalValues(node, issues) {
     issues.fractionalValues.push({
       name: node.name,
       type: node.type,
-      values: problematicValues
+      values: problematicValues,
+      id: node.id  // ADDED: Store node ID
     });
   } else {
     console.log(`✅ No spacing issues found in ${node.name}`);
@@ -219,7 +242,8 @@ function checkForGroups(node, issues) {
     issues.groupsUsed.push({
       name: node.name,
       type: node.type,
-      childCount: childCount
+      childCount: childCount,
+      id: node.id  // ADDED: Store node ID
     });
   }
 }
@@ -230,7 +254,8 @@ function checkNegativeSpacing(node, issues) {
       issues.negativeSpacing.push({
         name: node.name,
         type: node.type,
-        spacing: node.itemSpacing
+        spacing: node.itemSpacing,
+        id: node.id  // ADDED: Store node ID
       });
     }
   }
