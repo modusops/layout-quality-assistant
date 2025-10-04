@@ -11,53 +11,89 @@
     }
     
     .header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 20px;
     }
     
     .header h2 {
-      margin: 0 0 8px 0;
+      margin: 0;
       font-size: 18px;
       font-weight: 500;
       color: #ffffff;
     }
     
-    .selection-info {
+    .header .author {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 400;
+      color: #ffffff;
+    }
+    
+    .info-container {
       background: #666;
       padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 16px;
-      /* border: 1px solid #000000; */
+      border-radius: 8px;
+      border: 1px solid #000;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
     
-    .selection-info .label {
-      font-weight: 500;
-      color: #333;
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333;
     }
     
-    .selection-info .value {
-      color: #000;
+    .info-text {
+      flex: 1;
+      color: #ffffff;
+      font-size: 14px;
       font-weight: 400;
+      line-height: 20px;
     }
     
-    .analyze-btn {
+    .coffee-text {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+    }
+    
+    .coffee-text a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+    
+    .coffee-text a:hover {
+      color: #cccccc;
+    }
+    
+    .check-btn {
       background: #4851b6;
       color: white;
-      border: none;
-      padding: 12px 12px;
-      border-radius: 25px;
+      border: 1px solid #2f39ab;
+      padding: 8px 16px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      width: 100%;
-      margin-bottom: 20px;
+      font-size: 15px;
+      font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0;
+      line-height: 20px;
     }
     
-    .analyze-btn:hover {
+    .check-btn:hover {
       background: #3d47b2;
     }
     
-    .analyze-btn:disabled {
+    .check-btn:disabled {
       background: #b0b0b0;
       cursor: not-allowed;
     }
@@ -74,7 +110,7 @@
       margin-bottom: 16px;
       border: 1px solid #e5e5e5;
       border-radius: 6px;
-      overflow: hidden;
+      overflow: visible;
     }
     
     .issue-category.has-issues {
@@ -95,6 +131,66 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      overflow: visible;
+      border-radius: 6px 6px 0 0;
+    }
+    
+    .issue-title-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .info-icon {
+      cursor: default;
+      font-size: 14px;
+      opacity: 0.7;
+      position: relative;
+      transition: opacity 0.2s ease;
+    }
+    
+    .info-icon:hover {
+      opacity: 1;
+    }
+    
+    .info-icon .tooltip {
+      visibility: hidden;
+      position: absolute;
+      left: 50%;
+      bottom: 125%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 400;
+      white-space: normal;
+      width: 240px;
+      max-width: 90vw;
+      z-index: 9999;
+      border: 1px solid #333;
+      line-height: 1.4;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+    
+    .info-icon:hover .tooltip {
+      visibility: visible;
+    }
+    
+    .info-icon .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: #1a1a1a;
+    }
+    
+    .info-icon .tooltip.narrow {
+      width: 180px;
     }
     
     .issue-header.has-issues {
@@ -106,7 +202,8 @@
     .issue-header.no-issues {
       background: #333;
       /* #64c41a */
-      color: #ffffff
+      color: #ffffff;
+      border-radius: 6px;
     }
     
     .issue-count {
@@ -129,6 +226,7 @@
     .issue-items {
       max-height: 150px;
       overflow-y: auto;
+      border-radius: 0 0 6px 6px;
     }
     
     .issue-item {
@@ -164,16 +262,6 @@
       color: #666;
       font-size: 10px;
       font-weight: 400;
-    }
-    
-    .issue-explanation {
-      background: #333;
-      padding: 6px 8px;
-      margin-top: 4px;
-      border-radius: 4px;
-      border: 1px solid #000000;
-      color: #8e8e8e;
-      font-size: 12px;
     }
     
     .summary {
@@ -224,16 +312,17 @@
 </head>
 <body>
   <div class="header">
-    <h2>🔍 Layout Quality Assistant</h2>
-    <!-- <p style="margin: 0; color: #000; font-weight: 500;">Check for common design issues</p> -->
+    <h2>🔍 Layout quality assistant</h2>
+    <p class="author">By Dave Chan</p>
   </div>
   
-  <div class="selection-info">
-    <div><span class="label">Layer selected:</span> <span id="selectionName" class="value">Nothing selected</span></div>
-    <div><span class="label">Type:</span> <span id="selectionType" class="value">-</span></div>
+  <div class="info-container">
+    <div class="info-row">
+      <div class="info-text">Select a frame to begin linting your Figma.</div>
+      <button id="analyzeBtn" class="check-btn" disabled>Check</button>
+    </div>
+    <div class="coffee-text">🙏 Please consider buying me a <a href="https://buymeacoffee.com/davechan" target="_blank">cup of coffee</a> ☕</div>
   </div>
-  
-  <button id="analyzeBtn" class="analyze-btn" disabled>Select a Frame to Analyze</button>
   
   <div id="resultsContainer" class="results-container">
     <div id="summary" class="summary">
@@ -252,8 +341,6 @@
   <script>
     const analyzeBtn = document.getElementById('analyzeBtn');
     // const closeBtn = document.getElementById('closeBtn');
-    const selectionName = document.getElementById('selectionName');
-    const selectionType = document.getElementById('selectionType');
     const resultsContainer = document.getElementById('resultsContainer');
     const summary = document.getElementById('summary');
     const issuesList = document.getElementById('issuesList');
@@ -285,18 +372,10 @@
     // };
     
     function updateSelectionInfo(name, type, hasSelection) {
-      selectionName.textContent = name || 'Nothing selected';
-      selectionType.textContent = type || '-';
-      
       if (hasSelection && type === 'FRAME') {
         analyzeBtn.disabled = false;
-        analyzeBtn.textContent = `Analyze "${name}"`;
-      } else if (hasSelection && type !== 'FRAME') {
-        analyzeBtn.disabled = true;
-        analyzeBtn.textContent = 'Please select a Frame';
       } else {
         analyzeBtn.disabled = true;
-        analyzeBtn.textContent = 'Select a Frame to Analyze';
       }
     }
     
@@ -332,14 +411,31 @@
       const headerEl = document.createElement('div');
       headerEl.className = `issue-header ${hasIssues ? 'has-issues' : 'no-issues'}`;
       
-      const titleEl = document.createElement('div');
+      // Title container with info icon
+      const titleContainerEl = document.createElement('div');
+      titleContainerEl.className = 'issue-title-container';
+      
+      const titleEl = document.createElement('span');
       titleEl.textContent = ISSUE_TITLES[category] || category;
+      
+      // Add info icon with tooltip
+      const infoIconEl = document.createElement('span');
+      infoIconEl.className = 'info-icon';
+      infoIconEl.textContent = 'ℹ️';
+      
+      const tooltipEl = document.createElement('span');
+      tooltipEl.className = category === 'hiddenLayers' ? 'tooltip narrow' : 'tooltip';
+      tooltipEl.textContent = ISSUE_EXPLANATIONS[category] || '';
+      
+      infoIconEl.appendChild(tooltipEl);
+      titleContainerEl.appendChild(titleEl);
+      titleContainerEl.appendChild(infoIconEl);
       
       const countEl = document.createElement('div');
       countEl.className = `issue-count ${hasIssues ? 'has-issues' : 'no-issues'}`;
       countEl.textContent = hasIssues ? items.length : '✓';
       
-      headerEl.appendChild(titleEl);
+      headerEl.appendChild(titleContainerEl);
       headerEl.appendChild(countEl);
       categoryEl.appendChild(headerEl);
       
@@ -379,11 +475,7 @@
       
       const nameEl = document.createElement('div');
       nameEl.className = 'issue-name';
-      // Add a click indicator if clickable
       nameEl.textContent = item.name || 'Unnamed';
-      if (item.id) {
-        nameEl.textContent += ' 👆';
-      }
       
       const detailsEl = document.createElement('div');
       detailsEl.className = 'issue-details';
@@ -404,13 +496,8 @@
         detailsEl.textContent = details;
       }
       
-      const explanationEl = document.createElement('div');
-      explanationEl.className = 'issue-explanation';
-      explanationEl.textContent = ISSUE_EXPLANATIONS[category] || '';
-      
       itemEl.appendChild(nameEl);
       if (details) itemEl.appendChild(detailsEl);
-      itemEl.appendChild(explanationEl);
       
       return itemEl;
     }
