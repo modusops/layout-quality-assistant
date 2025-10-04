@@ -137,10 +137,20 @@
       font-size: 11px;
       /* color:#333 */
       background-color: #000;
+      transition: background-color 0.2s ease;  /* ADDED: Smooth hover transition */
     }
     
     .issue-item:last-child {
       border-bottom: none;
+    }
+    
+    /* ADDED: Hover effect for clickable items */
+    .issue-item.clickable {
+      cursor: pointer;
+    }
+    
+    .issue-item.clickable:hover {
+      background-color: #1a1a1a;
     }
     
     .issue-name {
@@ -349,13 +359,31 @@
       return categoryEl;
     }
     
+    // UPDATED: createIssueItem function with click-to-select functionality
     function createIssueItem(category, item) {
       const itemEl = document.createElement('div');
       itemEl.className = 'issue-item';
       
+      // Make the item clickable if it has a node ID
+      if (item.id) {
+        itemEl.classList.add('clickable');
+        itemEl.onclick = () => {
+          parent.postMessage({ 
+            pluginMessage: { 
+              type: 'select-node', 
+              nodeId: item.id 
+            } 
+          }, '*');
+        };
+      }
+      
       const nameEl = document.createElement('div');
       nameEl.className = 'issue-name';
+      // Add a click indicator if clickable
       nameEl.textContent = item.name || 'Unnamed';
+      if (item.id) {
+        nameEl.textContent += ' 👆';
+      }
       
       const detailsEl = document.createElement('div');
       detailsEl.className = 'issue-details';
