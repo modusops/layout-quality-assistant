@@ -15,6 +15,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      padding: 4px 4px 4px 0px;
     }
     
     .header-title {
@@ -50,8 +51,17 @@
       margin: 0;
       font-size: 12px;
       font-weight: 400;
-      color: #989898;
+      color: #C3C3C3;
       line-height: 20px;
+    }
+    
+    .header .author a {
+      color: #C3C3C3;
+      text-decoration: underline;
+    }
+    
+    .header .author a:hover {
+      color: #ffffff;
     }
     
     .info-container {
@@ -83,19 +93,10 @@
     }
     
     .coffee-text {
-      color: #ffffff;
-      font-size: 14px;
+      color: #C3C3C3;
+      font-size: 10px;
       font-weight: 400;
-      line-height: 20px;
-    }
-    
-    .coffee-text a {
-      color: #ffffff;
-      text-decoration: underline;
-    }
-    
-    .coffee-text a:hover {
-      color: #cccccc;
+      line-height: 16px;
     }
     
     .check-btn {
@@ -343,7 +344,7 @@
       </div>
       <h2>Layout quality assistant</h2>
     </div>
-    <p class="author">By Dave Chan</p>
+    <p class="author"><a href="https://buymeacoffee.com/davechan" target="_blank">Buy me coffee ☕</a></p>
   </div>
   
   <div class="info-container">
@@ -351,7 +352,7 @@
       <div class="info-text">Select a frame to begin linting your Figma.</div>
       <button id="analyzeBtn" class="check-btn" disabled>Check</button>
     </div>
-    <div class="coffee-text">🙏 Please consider buying me a <a href="https://buymeacoffee.com/davechan" target="_blank">cup of coffee</a> ☕</div>
+    <div class="coffee-text">V1.03 last updated Oct 5, 2025</div>
   </div>
   
   <div id="resultsContainer" class="results-container">
@@ -418,7 +419,7 @@
       // Update summary
       if (totalIssues === 0) {
         summary.className = 'summary clean';
-        summary.textContent = `🎉 "${frameName}" looks great! No issues found.`;
+        summary.innerHTML = `🎉 "${frameName}" looks great!<br>No issues found.`;
       } else {
         summary.className = 'summary issues';
         summary.textContent = `🔎 Found ${totalIssues} issue${totalIssues === 1 ? '' : 's'} in "${frameName}"`;
